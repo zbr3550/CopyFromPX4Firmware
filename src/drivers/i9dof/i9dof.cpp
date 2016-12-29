@@ -104,8 +104,13 @@ private:
 	int 			payload_rx_done(void);
 
 	uint32 			get_baudrate(uint32 baudRate);
+<<<<<<< HEAD
 	I9dof_Error_Eode_E 			Create_Serial(const char *deviceName,uint32 baudRate,int *fd);
 	I9dof_Error_Eode_E 			Destroy_Serial(int *fd);
+=======
+	I9dof_Error_Code_E 			Create_Serial(const char *deviceName,uint32 baudRate,int *fd);
+	I9dof_Error_Code_E 			Destroy_Serial(int *fd);
+>>>>>>> i9dof_imu-1
 
 	/* do not allow to copy due to ptr data members */
 	I9DOF(const I9DOF&);
@@ -121,7 +126,11 @@ I9DOF::I9DOF():
 	CDev("I9DOF",PX4_I9DOF_DEVICE_PATH),
 	_task_should_exit(true),
 	_i9dof_task(-1),
+<<<<<<< HEAD
 	_bad_transfers(perf_alloc(PC_COUNT, "sbg_bad_transfers")),
+=======
+	_bad_transfers(perf_alloc(PC_COUNT, "i9dof_bad_transfers")),
+>>>>>>> i9dof_imu-1
 	_loop_perf(perf_alloc(PC_ELAPSED, "sensor task update"))
 	{
 
@@ -168,7 +177,11 @@ I9DOF::init()
 	_accel_class_instance = register_class_devname(ACCEL_BASE_DEVICE_PATH);
 	_gyro_class_instance = register_class_devname(GYRO_BASE_DEVICE_PATH);
 
+<<<<<<< HEAD
 	/* start the IO interface task  1600*/
+=======
+	/* start the IO interface task  2000*/
+>>>>>>> i9dof_imu-1
 	_i9dof_task = px4_task_spawn_cmd("i9dof",
 		SCHED_FIFO,
 		241,
@@ -193,23 +206,40 @@ I9DOF::task_main_trampoline(int argc, char *argv[])
 void
 I9DOF::task_main()
 {
+<<<<<<< HEAD
 	I9dof_Error_Eode_E 		ret_tmp;
+=======
+	I9dof_Error_Code_E 		ret_tmp;
+>>>>>>> i9dof_imu-1
 	const uint32_t baudRate = 115200;
 	int rec = 0;
 	uint64_t cnt = 0;
 
 	ret_tmp = Create_Serial(I9DOF_SERIAL_DEVICE,baudRate,&_serial_fd);
 	i9dof_debug("open:%s ,baudRate:%d ,serial_fd:%d ,errorcode:%d \n",I9DOF_SERIAL_DEVICE,baudRate,_serial_fd,ret_tmp);
+<<<<<<< HEAD
 	decode_init();
 
 	_task_should_exit = false;
+=======
+	if(ret_tmp == I9DOF_NO_ERROR){
+		decode_init();
+		_task_should_exit = false;
+	}
+>>>>>>> i9dof_imu-1
 	while(!_task_should_exit){
 		perf_begin(_loop_perf);
 		cnt++;
 		rec = receive(20);
+<<<<<<< HEAD
 		if(cnt % 200 == 0)
 			i9dof_debug("i9dof_poll,receive:%d",rec);
 		usleep(1000);
+=======
+		if(cnt % 400 == 0)
+			i9dof_debug("i9dof_poll,receive:%d",rec);
+	//	usleep(1000);
+>>>>>>> i9dof_imu-1
 		perf_end(_loop_perf);
 	}
 	Destroy_Serial(&_serial_fd);
@@ -276,7 +306,11 @@ uint32 I9DOF::get_baudrate(uint32 baudRate)
  * @param  fd         [Opne return fd]
  * @return            [I9DOF_NO_ERROR if the interface has been created.]
  */
+<<<<<<< HEAD
 I9dof_Error_Eode_E I9DOF::Create_Serial(const char *deviceName,uint32 baudRate,int *fd)
+=======
+I9dof_Error_Code_E I9DOF::Create_Serial(const char *deviceName,uint32 baudRate,int *fd)
+>>>>>>> i9dof_imu-1
 {
 	int32_t 		hSerialHandle;
 	struct termios 	options;
@@ -345,7 +379,11 @@ I9dof_Error_Eode_E I9DOF::Create_Serial(const char *deviceName,uint32 baudRate,i
 
 }
 
+<<<<<<< HEAD
 I9dof_Error_Eode_E I9DOF::Destroy_Serial(int *fd)
+=======
+I9dof_Error_Code_E I9DOF::Destroy_Serial(int *fd)
+>>>>>>> i9dof_imu-1
 {
 	int32_t 	hSerialHandle;
 	if(fd)
@@ -363,6 +401,41 @@ I9dof_Error_Eode_E I9DOF::Destroy_Serial(int *fd)
 
 }
 
+<<<<<<< HEAD
+=======
+I9dof_Error_Code_E I9DOF::Serial_Read(int *pHandle, void *pBuffer, uint32_t *pReadBytes, uint32_t bytesToRead)
+{
+	I9dof_Error_Code_E 	errorCode;
+	int32_t 			hSerialHandle;
+	int32_t 			numBytesRead;
+
+	/* Test input parameters */
+	if((pHandle)&&(pBuffer)&&(pReadBytes))
+	{
+		hSerialHandle = *pHandle;
+		numBytesRead = read(hSerialHandle,pBuffer,bytesToRead); 	// Read our buffer
+
+		if(numBytesRead >0)				// Check if we have at least one byte
+		{
+			errorCode = I9DOF_NO_ERROR;
+		}else{
+			errorCode = I9DOF_READ_ERROR;
+			numBytesRead = 0;
+		}
+
+		if(pReadBytes)					// If we can, returns the number of read bytes
+		{
+			*pReadBytes = numBytesRead;
+		}
+
+	}else{
+		errorCode = I9DOF_NULL_POINTER;
+	}
+
+	return errorCode;
+}
+
+>>>>>>> i9dof_imu-1
 int	// -1 = error, 0 = no message handled, 1 = message handled, 2 = sat info message handled
 I9DOF::receive(const unsigned timeout)
 {
@@ -392,7 +465,12 @@ I9DOF::receive(const unsigned timeout)
 		 * If more bytes are available, we'll go back to poll() again.
 		 */
 		usleep(5 * 1000);
+<<<<<<< HEAD
 	//	sbgInterfaceSerialRead(&sbgInterface,buf,&count,sizeof(buf));
+=======
+		Serial_Read(&_serial_fd,buf,&count,sizeof(buf));
+		
+>>>>>>> i9dof_imu-1
 		if(cnt%400==0)	
 			i9dof_debug("sbgInterfaceSerialRead bytes: %d, count down: %lld",count,hrt_absolute_time());
 

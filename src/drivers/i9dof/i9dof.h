@@ -12,6 +12,11 @@
 #define I9DOF0_DEVICE_PATH	"/dev/i9dof"
 #define I9DOF_DEFAULT_UART_PORT "/dev/ttyS4"
 
+<<<<<<< HEAD
+=======
+#define I9DOF_SERIAL_DEVICE	"/dev/ttyS6"
+
+>>>>>>> i9dof_imu-1
 #define I9DOF_SYNC1  0xA5
 #define I9DOF_SYNC2  0x5A
 #define I9DOF_EXT    0xAA
@@ -46,8 +51,14 @@ typedef enum {
 	I9DOF_NO_ERROR = 0,
 	I9DOF_ERROR,
 	I9DOF_NULL_POINTER,
+<<<<<<< HEAD
 	I9DOF_INVALID_PARAMETER
 
+=======
+	I9DOF_INVALID_PARAMETER,
+	
+	I9DOF_READ_ERROR
+>>>>>>> i9dof_imu-1
 }I9dof_Error_Eode_E;
 
 struct PACKED i9dof_imu_s{
